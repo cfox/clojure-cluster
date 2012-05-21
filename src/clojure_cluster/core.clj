@@ -7,10 +7,10 @@
 ;; Perform k-means clustering with: kcluster
 ;;   (kcluster vectors number-of-clusters range-start range-end)
 ;;   vectors - a sequence of vectors
-;;   
+;;
 
-(ns cluster
-    (:use cluster.internal))
+(ns clojure-cluster.core
+    (:use clojure-cluster.internal))
 
 (defn kcluster
   "Performs k-means clustering.
@@ -30,10 +30,10 @@
                clusters
                (let [vector (nth vectors index)
                      [sim closest-node] (closest-vector vector nodes)]
-                 (recur 
+                 (recur
                   (inc index)
-                  (assoc clusters 
-                    closest-node 
+                  (assoc clusters
+                    closest-node
                     (conj (nth clusters closest-node) index))))))
            new-nodes (map (fn [cluster] (average-vectors (map #(nth vectors %) cluster))) clusters)]
        (if (= new-nodes nodes)
@@ -41,7 +41,7 @@
          (kcluster vectors new-nodes)))))
 
 
-(defn hcluster 
+(defn hcluster
   "Performs hierarchical clustering.
     :nodes - a sequence of maps of the form:
       { :vec [1 2 3] }
@@ -56,12 +56,10 @@
           new-nodes (without nodes left-idx right-idx)
           left-node (nth nodes left-idx)
           right-node (nth nodes right-idx)]
-      (hcluster (conj 
+      (hcluster (conj
                  new-nodes
                  {:left left-node
-                  :right right-node 
-                  :vec (average-vectors 
-                        [(get left-node :vec) 
+                  :right right-node
+                  :vec (average-vectors
+                        [(get left-node :vec)
                          (get right-node :vec)])})))))
-
-

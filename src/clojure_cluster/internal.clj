@@ -1,10 +1,10 @@
 ;; Internal functions used by clojure.cluster
 
-(ns cluster.internal)
+(ns clojure-cluster.internal)
 
 (defn mean [v1] (/ (reduce + v1) (count v1)))
 (defn sqrt [n] (. Math sqrt n))
-(defmacro square [n] 
+(defmacro square [n]
   `(let [n# ~n] (* n# n#)))
 
 (defn sum [v] (reduce + v))
@@ -17,20 +17,20 @@
         sum-y (sum y)
         sum-x (sum x)
         prod-of-sqrts (* (sqrt (- (sum (map #(square %) x))
-                                  (* o (square sum-x)))) 
+                                  (* o (square sum-x))))
                          (sqrt (- (sum (map #(square %) y))
                                   (* o (square sum-y)))))]
     (if (= 0.0 prod-of-sqrts)
       nil
       (/ (- (sum (map #(* %1 %2) x y))
-            (* o sum-x sum-y)) 
+            (* o sum-x sum-y))
          prod-of-sqrts))))
 
 
 
 (defn compact [v]
   (filter #(not (nil? %)) v))
-    
+
 
 (defn average-vectors [vectors]
   (loop [rests vectors out '()]
@@ -51,20 +51,28 @@
        [sim, n]
        (let [[other-sim, other-n] (closest-vector target others (inc n))]
          (if (> sim other-sim) [sim,n] [other-sim,other-n]))))))
-      
+
 (defn n-in-cycle [cyclen start i]
   (let [absi (+ start i 1)]
     (if (>= absi cyclen)
       (n-in-cycle cyclen start (- absi cyclen))
       absi)))
 
+(defn nthrest
+  "Returns the nth rest of coll, coll when n is 0."
+  [coll n]
+    (loop [n n xs coll]
+      (if (and (pos? n) (seq xs))
+        (recur (dec n) (rest xs))
+        xs)))
+
 (defn closest-vectors [vs]
   (let [vcyc (cycle vs) vlen (count vs)]
     (loop [ptr 0 pair [0 0] c -1.0]
       (if (= ptr vlen)
         [pair c]
-        (let [[cp cn] (closest-vector 
-                       (nth vs ptr) 
+        (let [[cp cn] (closest-vector
+                       (nth vs ptr)
                        (take (dec vlen) (nthrest vcyc (inc ptr))))
               closer? (if (> cp c) true nil)]
           (recur (inc ptr)
@@ -90,8 +98,8 @@
     (if (= index length)
       vector
       (recur (inc index)
-             (cons (+ range-start 
-                      (rand (- range-end range-start))) 
+             (cons (+ range-start
+                      (rand (- range-end range-start)))
                    vector)))))
 
 (defn random-vectors [how-many length range-start range-end]
@@ -101,7 +109,3 @@
       vectors
       (recur (dec how-many-left)
              (cons (random-vector length range-start range-end) vectors)))))
-
-
-
-
