@@ -32,12 +32,10 @@
   (filter #(not (nil? %)) v))
 
 
-(defn average-vectors [vectors]
-  (loop [rests vectors out '()]
-    (let [firsts (compact (map first rests))]
-      (if (= 0 (count rests))
-        out
-        (recur (compact (map rest rests)) `(~@out ~(mean firsts)))))))
+(defn average-vectors
+  [vectors]
+  (let [cnt (count vectors)]
+    (apply map (fn [& items] (/ (apply + items) cnt)) vectors)))
 
 (defmacro grtr [n1 n2] `(if (> ~n1 ~n2) ~n1 ~n2))
 

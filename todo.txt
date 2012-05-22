@@ -1,0 +1,5 @@
+* add k-medoid
+* parameterize distance metric
+* add fractional distance metric
+* implement silhouette
+* implement multi-pass silhouette heuristic to determine k
